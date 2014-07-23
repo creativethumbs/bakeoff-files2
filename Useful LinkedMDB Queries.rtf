@@ -1,0 +1,325 @@
+{\rtf1\ansi\ansicpg1252\cocoartf1265\cocoasubrtf210
+{\fonttbl\f0\fswiss\fcharset0 Helvetica;\f1\fnil\fcharset0 AndaleMono;}
+{\colortbl;\red255\green255\blue255;\red38\green38\blue38;\red247\green247\blue247;}
+\margl1440\margr1440\vieww16440\viewh9060\viewkind0
+\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\pardirnatural
+
+\f0\fs24 \cf0 Useful things\
+\
+See all the movies Pierce Brosnan is in:\
+\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\pardirnatural
+
+\f1 \cf0 SELECT ?hasValue\
+WHERE \{ \
+  \{?x ?y "Pierce Brosnan" \}\
+  \{?x <http://data.linkedmdb.org/resource/movie/performance_film> ?hasValue\}\
+\}
+\f0 \
+\
+\
+See all the actors in \'93Die Another Day\'94:\
+
+\f1 SELECT DISTINCT ?actorname\
+WHERE \{ \
+  \{?filmID ?y ?z\}\
+  \{?filmID <http://purl.org/dc/terms/title> "Die Another Day"\}\
+  \{?filmID <http://data.linkedmdb.org/resource/movie/actor> ?actorinfo\}\
+  \{?actorinfo <http://data.linkedmdb.org/resource/movie/actor_name> ?actorname\}\
+\}
+\f0 \
+\
+\
+See all the actors Johnny Depp has costarred with:\
+
+\f1 SELECT DISTINCT ?costars \{\
+  \{\
+   SELECT DISTINCT ?filmID\
+	WHERE \{ \
+  	\{?filmID ?y ?z\}\
+  	\{?filmID <http://data.linkedmdb.org/resource/movie/actor> ?actorinfo\}\
+  	\{?actorinfo <http://data.linkedmdb.org/resource/movie/actor_name> "Johnny Depp"\}\
+	\}\
+  \} \
+  \
+  \{?filmID ?y ?z\}\
+  \{?filmID <http://data.linkedmdb.org/resource/movie/actor> ?actorinfo\}\
+  \{?actorinfo <http://data.linkedmdb.org/resource/movie/actor_name> ?costars\}\
+\}\
+\
+\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\pardirnatural
+
+\f0 \cf0 Version 2:
+\f1 \
+PREFIX imdb: <http://data.linkedmdb.org/resource/movie/>\
+\
+SELECT DISTINCT ?costarName \{\
+  \{\
+    ?actorID imdb:actor_name "Johnny Depp" .\
+    ?filmID imdb:actor ?actorID .\
+    ?filmID imdb:actor ?costarID .\
+    ?costarID imdb:actor_name ?costarName \
+  \}\
+\}\
+ORDER BY ?costarName\
+LIMIT 10
+\f0 \
+\
+\
+See all the films Helena Bonham Carter and Johnny Depp starred in:\
+\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\pardirnatural
+
+\f1 \cf0 SELECT DISTINCT ?name \{\
+	\{SELECT DISTINCT ?filmID \{\
+      \{\
+       SELECT DISTINCT ?filmID\
+        WHERE \{ \
+        \{?filmID ?y ?z\}\
+        \{?filmID <http://data.linkedmdb.org/resource/movie/actor> ?actorinfo\}\
+        \{?actorinfo <http://data.linkedmdb.org/resource/movie/actor_name> "Johnny Depp"\}\
+        \}\
+      \} \
+      \
+      \{?filmID ?y ?z\}\
+      \{?filmID <http://data.linkedmdb.org/resource/movie/actor> ?actorinfo\}\
+      \{?actorinfo <http://data.linkedmdb.org/resource/movie/actor_name> "Helena Bonham Carter"\}\
+    \}\}\
+  \
+  ?filmID <http://purl.org/dc/terms/title> ?name\
+\}\
+\
+SELECT DISTINCT ?name \{\
+	\{SELECT DISTINCT ?filmID \{\
+      \{\
+       SELECT DISTINCT ?filmID\
+        WHERE \{ \
+        \{?filmID ?y ?z\}\
+        \{?filmID <http://data.linkedmdb.org/resource/movie/actor> ?actorinfo\}\
+        \{?actorinfo <http://data.linkedmdb.org/resource/movie/actor_name> "Johnny Depp"\}\
+        \}\
+      \} \
+      \
+      \{?filmID ?y ?z\}\
+      \{?filmID <http://data.linkedmdb.org/resource/movie/actor> ?actorinfo\}\
+      \{?actorinfo <http://data.linkedmdb.org/resource/movie/actor_name> "Helena Bonham Carter"\}\
+    \}\}\
+  \
+  ?filmID <http://purl.org/dc/terms/title> ?name\
+\}
+\f0 \
+\
+Version 2:\
+
+\f1 SELECT DISTINCT ?name \{\
+  ?filmID <http://data.linkedmdb.org/resource/movie/actor> ?actorinfo .\
+  ?filmID <http://data.linkedmdb.org/resource/movie/actor> ?costarinfo .\
+  \
+  ?actorinfo <http://data.linkedmdb.org/resource/movie/actor_name> "Johnny Depp" .\
+  ?costarinfo <http://data.linkedmdb.org/resource/movie/actor_name> "Helena Bonham Carter" .\
+   \
+  ?filmID <http://purl.org/dc/terms/title> ?name\
+\}
+\f0 \
+\
+All the film IDs:\
+
+\f1 SELECT DISTINCT ?s\
+WHERE \{ ?s ?p ?q \
+  . FILTER(regex(str(?s), "film/", "i")) \
+\}\
+\
+\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\pardirnatural
+
+\f0 \cf0 actor / director:\
+\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\pardirnatural
+
+\f1 \cf0 SELECT DISTINCT ?name \{\
+  ?filmID <http://data.linkedmdb.org/resource/movie/actor> ?actorinfo .\
+  ?filmID <http://data.linkedmdb.org/resource/movie/director> ?directorinfo .\
+  \
+  ?actorinfo <http://data.linkedmdb.org/resource/movie/actor_name> \cf2 \cb3 "Peter Cullen"\cf0 \cb1  .\
+  ?directorinfo <http://data.linkedmdb.org/resource/movie/director_name> \cf2 \cb3 "Michael Bay"\cf0 \cb1  .\
+   \
+  ?filmID <http://purl.org/dc/terms/title> ?name\
+\}
+\f0 \
+\
+All the film IDs:\
+
+\f1 SELECT DISTINCT ?s\
+WHERE \{ ?s ?p ?q \
+  . FILTER(regex(str(?s), "film/", "i")) \
+\}
+\f0 \
+\
+For movies.csv\
+
+\f1 SELECT DISTINCT ?id ?title\
+WHERE \{ \
+  ?s ?p ?q .\
+  FILTER(regex(str(?s), "film/", "i")) .\
+  ?s <http://data.linkedmdb.org/resource/movie/filmid> ?id .\
+  ?s <http://purl.org/dc/terms/title> ?title\
+\}
+\f0 \
+\
+For roles.csv\
+
+\f1 SELECT DISTINCT ?filmid ?actorid ?name\
+\{\
+	\{SELECT DISTINCT ?actorid ?name ?filmname\
+      WHERE \{ \
+      \{?filmID ?y ?z\}\
+      \{?filmID <http://data.linkedmdb.org/resource/movie/actor> ?actorinfo\}\
+      \{?actorinfo <http://data.linkedmdb.org/resource/movie/actor_name> ?name\}\
+      \{?actorinfo <http://data.linkedmdb.org/resource/movie/actor_actorid> ?actorid\}\
+      \{?actorinfo <http://data.linkedmdb.org/resource/movie/performance> ?perfid\}\
+      \{?perfid <http://data.linkedmdb.org/resource/movie/performance_film> ?filmname\}\
+      \
+  	\}\}\
+  \{?s ?p ?filmname\}\
+  \{?s <http://data.linkedmdb.org/resource/movie/filmid> ?filmid\}\
+  \
+\}\
+\
+\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\pardirnatural
+
+\f0 \cf0 List the directors and actors they worked with in each film
+\f1 \
+PREFIX imdb:<http://data.linkedmdb.org/resource/movie/>\
+PREFIX foaf:<http://xmlns.com/foaf/0.1/>\
+\
+SELECT DISTINCT ?directorname ?films ?actorname\
+WHERE \{ \
+  ?filmID imdb:director ?directorinfo .\
+  ?directorinfo imdb:director_name ?directorname .\
+  ?directorinfo foaf:made ?films .\
+  ?films imdb:actor ?actorinfo .\
+  ?actorinfo imdb:actor_name ?actorname .\
+\} ORDER BY ?directorname\
+\
+another version:\
+\
+PREFIX imdb:<http://data.linkedmdb.org/resource/movie/>\
+PREFIX foaf:<http://xmlns.com/foaf/0.1/>\
+\
+SELECT DISTINCT ?directorname ?actorname\
+WHERE \{ \
+  ?filmID imdb:director ?directorinfo .\
+  ?directorinfo imdb:director_name ?directorname .\
+  ?directorinfo foaf:made ?films .\
+  ?films imdb:actor ?actorinfo .\
+  ?actorinfo imdb:actor_name ?actorname \
+  \
+  \
+\} ORDER BY ?directorname ?actorname\
+\
+\
+\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\pardirnatural
+
+\f0\b \cf0 Which producers / directors have the highest repeat rates?
+\f1\b0 \
+\
+(not working?)\
+\
+PREFIX imdb:<http://data.linkedmdb.org/resource/movie/>\
+PREFIX foaf:<http://xmlns.com/foaf/0.1/>\
+PREFIX purl:<http://purl.org/dc/terms/>\
+\
+SELECT DISTINCT ?directorname ?actorname (COUNT(?count) as ?pcount)\
+WHERE \{ \
+  ?filmID imdb:director ?directorinfo .\
+  ?directorinfo imdb:director_name ?directorname .\
+  ?directorinfo foaf:made ?films .\
+  ?films imdb:actor ?actorinfo .\
+  ?actorinfo imdb:actor_name ?actorname .\
+  \
+  ?filmID imdb:actor ?actorinfo .\
+  ?filmID imdb:director ?costarinfo .\
+  \
+  ?actorinfo imdb:actor_name ?actorname .\
+  ?costarinfo imdb:director_name ?directorname .\
+   \
+  ?filmID purl:title ?count\
+  \
+\} GROUP BY ?count ?directorname ?actorname ORDER BY DESC(?pcount)\
+\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\pardirnatural
+
+\f0 \cf0 \
+\
+For creating actors.csv\
+\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\pardirnatural
+
+\f1 \cf0 PREFIX imdb: <http://data.linkedmdb.org/resource/movie/>\
+\
+SELECT DISTINCT ?actorname ?actorid ?title\
+\{\
+  ?filmID imdb:actor ?actorinfo .\
+  ?actorinfo imdb:actor_name ?actorname .\
+  ?actorinfo imdb:actor_actorid ?actorid .\
+  ?actorinfo imdb:performance ?value .\
+  ?value imdb:performance_film ?title\
+\} ORDER BY ?actorname
+\f0 \
+\
+For creating directors.csv\
+
+\f1 PREFIX imdb: <http://data.linkedmdb.org/resource/movie/>\
+PREFIX foaf: <http://xmlns.com/foaf/0.1/>\
+PREFIX purl: <http://purl.org/dc/terms/>\
+\
+SELECT DISTINCT ?directorname ?directorid ?value\
+\{\
+  ?filmID imdb:director ?directorinfo .\
+  ?directorinfo imdb:director_name ?directorname .\
+  ?directorinfo imdb:director_directorid ?directorid .\
+  ?directorinfo foaf:made ?value .\
+\} ORDER BY ?directorname
+\f0 \
+\
+\
+creates films.tsv\
+
+\f1 PREFIX imdb: <http://data.linkedmdb.org/resource/movie/>\
+PREFIX purl: <http://purl.org/dc/terms/>\
+\
+SELECT DISTINCT ?filmID ?actorname ?directorname\
+\{\
+  ?filmID imdb:actor ?actorinfo .\
+  ?filmID imdb:director ?directorinfo .\
+  ?filmID purl:title ?film .\
+  \
+  ?actorinfo imdb:actor_name ?actorname .\
+  ?directorinfo imdb:director_name ?directorname .\
+  \
+\} ORDER BY ?film
+\f0 \
+\
+working version?\
+\
+
+\f1 PREFIX imdb:<http://data.linkedmdb.org/resource/movie/>\
+PREFIX foaf:<http://xmlns.com/foaf/0.1/>\
+PREFIX purl:<http://purl.org/dc/terms/>\
+\
+SELECT DISTINCT ?directorname ?actorname (COUNT(?count) as ?pcount)\
+\{\
+  \{SELECT DISTINCT ?directorname ?actorname \
+  WHERE \{ \
+    ?filmID imdb:director ?directorinfo .\
+    ?directorinfo imdb:director_name ?directorname .\
+    ?directorinfo foaf:made ?films .\
+    ?films imdb:actor ?actorinfo .\
+    ?actorinfo imdb:actor_name ?actorname .\
+  \}\} \
+  \
+  ?filmID imdb:actor ?actorinfo .\
+  ?filmID imdb:director ?directorinfo .\
+  \
+  ?actorinfo imdb:actor_name ?actorname .\
+  ?directorinfo imdb:director_name ?directorname .\
+   \
+  ?filmID purl:title ?count\
+  \
+\} GROUP BY ?directorname ?actorname ORDER BY DESC(?pcount)
+\f0 \
+}
