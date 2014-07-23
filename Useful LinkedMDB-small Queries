@@ -1,0 +1,41 @@
+costars
+SELECT DISTINCT ?name {
+  ?filmID <http://data.linkedmdb.org/resource/actor> "Johnny Depp" .
+  ?filmID <http://data.linkedmdb.org/resource/actor> "Helena Bonham Carter" .
+   
+  ?filmID <http://purl.org/dc/terms/title> ?name
+}
+
+director/actor
+SELECT DISTINCT ?name {
+  ?filmID <http://data.linkedmdb.org/resource/actor> "Megan Fox" .
+  ?filmID <http://data.linkedmdb.org/resource/director> "Michael Bay" .
+   
+  ?filmID <http://purl.org/dc/terms/title> ?name
+}
+
+
+repeats
+PREFIX imdb:<http://data.linkedmdb.org/resource/>
+PREFIX movie:<http://data.linkedmdb.org/resource/movie/>
+PREFIX foaf:<http://xmlns.com/foaf/0.1/>
+PREFIX purl:<http://purl.org/dc/terms/>
+
+SELECT DISTINCT ?directorname ?actorname (COUNT(?count) as ?pcount)
+{
+  {SELECT DISTINCT ?directorname ?actorname 
+  WHERE { 
+    ?directorinfo movie:director_name ?directorname .
+    ?directorinfo foaf:made ?films .
+    ?films imdb:actor ?actorname .
+  }} 
+  
+  ?filmID imdb:actor ?actorname .
+  ?filmID imdb:director ?directorname .
+   
+  ?filmID purl:title ?count
+  
+} GROUP BY ?directorname ?actorname ORDER BY DESC(?pcount)
+
+
+
